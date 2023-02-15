@@ -9,13 +9,8 @@ const userSchema = new Schema(
       required: [true, "Username is required"],
       unique: true,
       minlength: 4,
-      maxlength: 20,
-      match: [
-        /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]$/,
-        "Usernames can contain characters a-z, 0-9, underscores and periods. The username cannot start with a period nor end with a period. It must also not have more than one period sequentially."
-      ]
+      maxlength: 20
     },
-    userType: String,
     email: {
       type: String,
       required: [true, "Email is required."],
@@ -39,12 +34,47 @@ const userSchema = new Schema(
         default: ""
       },
       birthday: {
-        type: Date
+        type: Date,
+        default: Date.now,
+        required: true
       },
       gender: {
         type: String,
         default: "unspecified",
-        enum: ["male", "female", "unspecified"]
+        enum: ["male", "female", "unspecified"],
+        required: true
+      },
+      breed: {
+        type: String,
+        default: "unspecified",
+        required: true
+      },
+      isNeuteredOrSpayed: {
+        type: Boolean,
+        default: false,
+        required: true
+      },
+      isVaccinated: {
+        type: Boolean,
+        default: false,
+        required: true
+      },
+      isTrained: {
+        type: Boolean,
+        default: false,
+        required: true
+      },
+      size: {
+        type: String,
+        default: "unspecified",
+        enum: [
+          "unspecified",
+          "Small (Up to 14 kg)",
+          "Medium (Between 14-28kg)",
+          "Large (Between 28–42kg)",
+          "Extra Large (Over 42kgs)"
+        ],
+        required: true
       }
     },
     friends: [

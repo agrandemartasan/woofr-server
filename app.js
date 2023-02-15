@@ -21,6 +21,9 @@ app.use("/api", indexRoutes);
 const authRoutes = require("./routes/auth.routes");
 app.use("/api", authRoutes);
 
+const woofrRoutes = require("./routes/woofr.routes");
+app.use("/api", woofrRoutes);
+
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
 

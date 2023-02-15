@@ -8,14 +8,14 @@ const router = express.Router();
 
 router.post("/signup", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { username, email, password } = req.body;
 
-    if (!email || !password) {
+    if (!username || !email || !password) {
       res.status(200).json({ message: "Missing fields" });
       return;
     }
 
-    const foundUser = await User.findOne({ email });
+    const foundUser = await User.findOne({ username, email });
     if (foundUser) {
       res.status(200).json({ message: "User already exists" });
       return;
@@ -23,7 +23,11 @@ router.post("/signup", async (req, res) => {
 
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(password, salt);
-    const createdUser = await User.create({ email, password: hashedPassword });
+    const createdUser = await User.create({
+      username,
+      email,
+      password: hashedPassword
+    });
 
     res.status(200).json(createdUser);
   } catch (error) {
@@ -33,14 +37,14 @@ router.post("/signup", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
-    if (!email || !password) {
+    if (!username || !password) {
       res.status(400).json({ message: "missing fields" });
       return;
     }
 
-    const foundUser = await User.findOne({ email });
+    const foundUser = await User.findOne({ username });
     if (!foundUser) {
       res.status(401).json({ message: "invalid login" });
       return;
@@ -53,7 +57,7 @@ router.post("/login", async (req, res) => {
     }
 
     const authToken = jwt.sign(
-      { _id: foundUser._id, email: foundUser.email },
+      { _id: foundUser._id, username: foundUser.username },
       process.env.TOKEN_SECRET,
       { algorithm: "HS256", expiresIn: "6h" }
     );
