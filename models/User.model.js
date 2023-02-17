@@ -77,6 +77,12 @@ const userSchema = new Schema(
         required: true
       }
     },
+    invites: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Invite"
+      }
+    ],
     friends: [
       {
         type: mongoose.Schema.Types.ObjectId,
