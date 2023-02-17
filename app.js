@@ -24,6 +24,9 @@ app.use("/api", authRoutes);
 const woofrRoutes = require("./routes/woofr.routes");
 app.use("/api", woofrRoutes);
 
+const invitesRoutes = require("./routes/invites.routes");
+app.use("/api", invitesRoutes);
+
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
 
