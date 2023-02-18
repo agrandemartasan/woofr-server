@@ -2,16 +2,16 @@ const router = require("express").Router();
 const User = require("../models/User.model");
 const { isAuthenticated } = require("../middleware/jwt.middleware");
 
-router.get("/woofr", isAuthenticated, async (req, res) => {
+router.get("/woofr/:userId", isAuthenticated, async (req, res) => {
   try {
-    const response = await User.findById(req.params.projectId);
+    const response = await User.findById(req.params.userId);
     res.status(200).json(response);
   } catch (error) {
     res.status(500).json({ message: error });
   }
 });
 
-router.put("/woofr", isAuthenticated, async (req, res) => {
+router.put("/woofr/:userId", isAuthenticated, async (req, res) => {
   try {
     const {
       username,

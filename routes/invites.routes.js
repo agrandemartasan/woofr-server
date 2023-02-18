@@ -1,84 +1,71 @@
 const router = require("express").Router();
 const Invite = require("../models/Invite.model");
+const User = require("../models/User.model");
 
-router.post("/invites", (req, res) => {
-  const { sender, recipient, message } = req.body;
-  const invite = new Invite({ sender, recipient, message });
-  invite.save((error, newInvite) => {
-    if (error) {
-      return res.status(500).send(error);
-    }
-    User.findByIdAndUpdate(
-      sender,
-      { $push: { invites: newInvite._id } },
-      (error) => {
-        if (error) {
-          return res.status(500).send(error);
-        }
-        return res.status(200).json(newInvite);
-      }
-    );
-  });
-});
-
-router.get("/invites/:userId", (req, res) => {
-  const { userId } = req.params;
-  User.findById(userId)
-    .populate("invites")
-    .exec((error, user) => {
-      if (error) {
-        return res.status(500).send(error);
-      }
-      return res.status(200).json(user.invites);
+router.post("/invites", async (req, res) => {
+  try {
+    const { sender, recipient, message } = req.body;
+    const invite = new Invite({ sender, recipient, message });
+    const newInvite = await invite.save();
+    await User.findByIdAndUpdate(recipient, {
+      $push: { invites: newInvite._id }
     });
+    res.status(200).json(newInvite);
+  } catch (error) {
+    res.status(500).send(error);
+  }
 });
 
-router.put("/invites/:inviteId/accept", (req, res) => {
+router.get("/invites/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId).populate("invites");
+    res.status(200).json(user.invites);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+router.put("/invites/:inviteId/accept", async (req, res) => {
   const { inviteId } = req.params;
-  Invite.findByIdAndUpdate(
-    inviteId,
-    { $set: { status: "accepted" } },
-    (error, invite) => {
-      if (error) {
-        return res.status(500).send(error);
-      }
-      User.findByIdAndUpdate(
-        invite.recipient,
-        { $pull: { invites: inviteId } },
-        (error) => {
-          if (error) {
-            return res.status(500).send(error);
-          }
-          return res.status(200).json(invite);
-        }
-      );
-    }
-  );
+
+  try {
+    const invite = await Invite.findByIdAndUpdate(inviteId, {
+      $set: { status: "accepted" }
+    });
+
+    await Promise.all([
+      User.findByIdAndUpdate(invite.recipient, {
+        $push: { friends: invite.sender }
+      }),
+      User.findByIdAndUpdate(invite.sender, {
+        $push: { friends: invite.recipient }
+      }),
+      User.findByIdAndUpdate(invite.recipient, { $pull: { invites: inviteId } })
+    ]);
+
+    res.status(200).json(invite);
+  } catch (error) {
+    res.status(500).send(error);
+  }
 });
 
-router.put("/invites/:inviteId/reject", (req, res) => {
-  const { inviteId } = req.params;
-  Invite.findByIdAndUpdate(
-    inviteId,
-    { $set: { status: "rejected" } },
-    (error, invite) => {
-      if (error) {
-        return res.status(500).send(error);
-      }
-      if (!invite) {
-        return res.status(404).send({ message: "Invite not found" });
-      }
-
-      User.findByIdAndUpdate(
-        invite.recipient,
-        { $pull: { invites: inviteId } },
-        (error) => {
-          if (err) {
-            return res.status(500).send(error);
-          }
-          return res.status(200).json(invite);
-        }
-      );
+router.put("/invites/:inviteId/reject", async (req, res) => {
+  try {
+    const { inviteId } = req.params;
+    const invite = await Invite.findByIdAndUpdate(inviteId, {
+      $set: { status: "rejected" }
+    });
+    if (!invite) {
+      return res.status(404).send({ message: "Invite not found" });
     }
-  );
+    await User.findByIdAndUpdate(invite.recipient, {
+      $pull: { invites: inviteId }
+    });
+    res.status(200).json(invite);
+  } catch (error) {
+    res.status(500).send(error);
+  }
 });
+
+module.exports = router;
