@@ -11,30 +11,26 @@ router.get("/woofr/:userId", isAuthenticated, async (req, res) => {
   }
 });
 
-router.put("/woofr/:userId", isAuthenticated, async (req, res) => {
+router.put("/woofr/:userId", async (req, res) => {
   try {
     const {
       username,
       email,
-      password,
       profilePicture,
-      info: {
-        bio,
-        birthday,
-        gender,
-        breed,
-        isNeuteredOrSpayed,
-        isVaccinated,
-        isTrained,
-        size
-      }
+      bio,
+      birthday,
+      gender,
+      breed,
+      isNeuteredOrSpayed,
+      isVaccinated,
+      isTrained,
+      size
     } = req.body;
     const response = await User.findByIdAndUpdate(
       req.params.userId,
       {
         username,
         email,
-        password,
         profilePicture,
         info: {
           bio,
