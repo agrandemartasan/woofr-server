@@ -2,9 +2,18 @@ const router = require("express").Router();
 const User = require("../models/User.model");
 const { isAuthenticated } = require("../middleware/jwt.middleware");
 
-router.get("/woofr/:userId", isAuthenticated, async (req, res) => {
+router.get("/woofr/:userId", async (req, res) => {
   try {
     const response = await User.findById(req.params.userId);
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
+});
+
+router.get("/all", async (req, res) => {
+  try {
+    const response = await User.find();
     res.status(200).json(response);
   } catch (error) {
     res.status(500).json({ message: error });
@@ -17,6 +26,7 @@ router.put("/woofr/:userId", async (req, res) => {
       username,
       email,
       profilePicture,
+      locationByParish,
       bio,
       birthday,
       gender,
@@ -33,6 +43,7 @@ router.put("/woofr/:userId", async (req, res) => {
         email,
         profilePicture,
         info: {
+          locationByParish,
           bio,
           birthday,
           gender,

@@ -8,9 +8,9 @@ const router = express.Router();
 
 router.post("/signup", async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, location } = req.body;
 
-    if (!username || !email || !password) {
+    if (!username || !email || !password || !location) {
       res.status(200).json({ message: "Missing fields" });
       return;
     }
@@ -23,10 +23,12 @@ router.post("/signup", async (req, res) => {
 
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(password, salt);
+
     const createdUser = await User.create({
       username,
       email,
-      password: hashedPassword
+      password: hashedPassword,
+      info: { locationByParish: location }
     });
 
     res.status(200).json(createdUser);

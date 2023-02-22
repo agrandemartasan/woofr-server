@@ -1,5 +1,6 @@
 const { Schema, model } = require("mongoose");
 const mongoose = require("mongoose");
+const parishList = require("../data/parish.json");
 
 const userSchema = new Schema(
   {
@@ -28,6 +29,10 @@ const userSchema = new Schema(
       default: ""
     },
     info: {
+      locationByParish: {
+        type: String,
+        required: true
+      },
       bio: {
         type: String,
         maxlength: 200,
