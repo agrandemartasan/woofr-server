@@ -31,7 +31,7 @@ router.post("/signup", async (req, res) => {
       info: { locationByParish: location }
     });
 
-    res.status(200).json(createdUser);
+    res.status(200).json({ message: "Success", createdUser });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -59,7 +59,11 @@ router.post("/login", async (req, res) => {
     }
 
     const authToken = jwt.sign(
-      { _id: foundUser._id, username: foundUser.username },
+      {
+        _id: foundUser._id,
+        username: foundUser.username,
+        email: foundUser.email
+      },
       process.env.TOKEN_SECRET,
       { algorithm: "HS256", expiresIn: "6h" }
     );
