@@ -83,7 +83,7 @@ router.post("/upload", fileUpload.single("filename"), async (req, res) => {
 });
 
 // Route to get a specific user's friends
-router.get("/:userId/friends", async (req, res) => {
+router.get("/friends", async (req, res) => {
   try {
     const user = await User.findById(req.params.id).populate("friends");
     if (!user) {
@@ -97,7 +97,7 @@ router.get("/:userId/friends", async (req, res) => {
 });
 
 // Route to unfriend a user
-router.put("/:id/unfriend", async (req, res) => {
+router.put("/:userId/unfriend", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     const friendId = req.body.friendId;
