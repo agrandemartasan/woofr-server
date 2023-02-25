@@ -12,7 +12,7 @@ router.post("/invites", async (req, res) => {
     });
     res.status(200).json(newInvite);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({ message: error });
   }
 });
 
@@ -22,7 +22,7 @@ router.get("/invites/:userId", async (req, res) => {
     const user = await User.findById(userId).populate("invites");
     res.status(200).json(user.invites);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({ message: error });
   }
 });
 
@@ -46,7 +46,7 @@ router.put("/invites/:inviteId/accept", async (req, res) => {
 
     res.status(200).json(invite);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({ message: error });
   }
 });
 

@@ -83,23 +83,23 @@ router.post("/upload", fileUpload.single("filename"), async (req, res) => {
 });
 
 // Route to get a specific user's friends
-router.get("/friends", async (req, res) => {
+router.get("/:userId/friends", async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).populate("friends");
+    const user = await User.findById(req.params.userId).populate("friends");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
     res.json(user.friends);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
+    console.log(error);
+    res.status(500).json({ message: error });
   }
 });
 
 // Route to unfriend a user
 router.put("/:userId/unfriend", async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(req.params.userId);
     const friendId = req.body.friendId;
 
     if (!user) {
@@ -112,13 +112,21 @@ router.put("/:userId/unfriend", async (req, res) => {
       return res.status(404).json({ message: "User is not a friend" });
     }
 
-    user.friends.splice(friendIndex, 1);
-    await user.save();
+    await User.findByIdAndUpdate(user._id, {
+      $pull: {
+        friends: friendId
+      }
+    });
+    await User.findByIdAndUpdate(friendId, {
+      $pull: {
+        friends: user._id
+      }
+    });
 
     res.json(user.friends);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
+    console.log(error);
+    res.status(500).json({ message: error });
   }
 });
 
