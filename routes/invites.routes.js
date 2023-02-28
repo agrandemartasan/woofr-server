@@ -4,8 +4,8 @@ const User = require("../models/User.model");
 
 router.post("/invites", async (req, res) => {
   try {
-    const { sender, recipient, message } = req.body;
-    const invite = new Invite({ sender, recipient, message });
+    const { sender, recipient } = req.body;
+    const invite = new Invite({ sender, recipient });
     const newInvite = await invite.save();
     await User.findByIdAndUpdate(recipient, {
       $push: { invites: newInvite._id }

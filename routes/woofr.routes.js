@@ -101,6 +101,7 @@ router.put("/:userId/unfriend", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     const friendId = req.body.friendId;
+    console.log(friendId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
