@@ -2,6 +2,7 @@ const router = require("express").Router();
 const User = require("../models/User.model");
 const fileUpload = require("../config/cloudinary");
 const { isAuthenticated } = require("../middleware/jwt.middleware");
+const bcrypt = require("bcryptjs");
 
 router.get("/all", async (req, res) => {
   try {
@@ -68,19 +69,31 @@ router.put("/:userId", async (req, res) => {
     );
     res.status(200).json(response);
   } catch (error) {
-    res.status(500).json({ message: error });
+    console.log("Error: ", error);
+    res.status(500).json({ message: error.message });
   }
 });
 
-router.post("/upload", fileUpload.single("filename"), async (req, res) => {
-  try {
-    res.status(200).json({ fileUrl: req.file.path });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "An error occurred while returning the image path" });
+router.post(
+  "/upload",
+  fileUpload.single("filename"),
+  async (req, res, next) => {
+    try {
+      if (req.file) {
+        res.status(200).json({ fileUrl: req.file.path });
+      } else {
+        res.status(301).json({
+          message: "An error occurred while returning the image path"
+        });
+      }
+    } catch (error) {
+      console.log("err: ", error);
+      res
+        .status(301)
+        .json({ message: "An error occurred while returning the image path" });
+    }
   }
-});
+);
 
 // Route to get a specific user's friends
 router.get("/:userId/friends", async (req, res) => {

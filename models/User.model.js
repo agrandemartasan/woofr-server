@@ -1,6 +1,11 @@
 const { Schema, model } = require("mongoose");
 const mongoose = require("mongoose");
 const parishList = require("../data/parish.json");
+const date = new Date("8 Sep 2000");
+const getYear = date.toLocaleString("default", { year: "numeric" });
+const getMonth = date.toLocaleString("default", { month: "2-digit" });
+const getDay = date.toLocaleString("default", { day: "2-digit" });
+const today = getYear + "-" + getMonth + "-" + getDay;
 
 const userSchema = new Schema(
   {
@@ -39,8 +44,8 @@ const userSchema = new Schema(
         default: ""
       },
       birthday: {
-        type: Date,
-        default: Date.now,
+        type: String,
+
         required: true
       },
       gender: {
