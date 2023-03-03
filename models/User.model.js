@@ -87,7 +87,13 @@ const userSchema = new Schema(
         required: true
       }
     },
-    invites: [
+    invitesSent: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Invite"
+      }
+    ],
+    invitesReceived: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Invite"

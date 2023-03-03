@@ -7,20 +7,41 @@ router.post("/invites", async (req, res) => {
     const { sender, recipient } = req.body;
     const invite = new Invite({ sender, recipient });
     const newInvite = await invite.save();
-    await User.findByIdAndUpdate(recipient, {
-      $push: { invites: newInvite._id }
+
+    await Promise.all([
+      User.findByIdAndUpdate(recipient, {
+        $push: { invitesReceived: newInvite._id }
+      }),
+      User.findByIdAndUpdate(sender, {
+        $push: { invitesSent: newInvite._id }
+      })
+    ]);
+
+    const populatedInvite = await Invite.populate(newInvite, {
+      path: "sender recipient"
     });
-    res.status(200).json(newInvite);
+
+    res.status(200).json(populatedInvite);
   } catch (error) {
     res.status(500).json({ message: error });
   }
 });
 
-router.get("/invites/:userId", async (req, res) => {
+router.get("/invites/:userId/invitesReceived", async (req, res) => {
   try {
     const { userId } = req.params;
-    const user = await User.findById(userId).populate("invites");
-    res.status(200).json(user.invites);
+    const user = await User.findById(userId).populate("invitesReceived");
+    res.status(200).json(user.invitesReceived);
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
+});
+
+router.get("/invites/:userId/invitesSent", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId).populate("invitesSent");
+    res.status(200).json(user.invitesSent);
   } catch (error) {
     res.status(500).json({ message: error });
   }
