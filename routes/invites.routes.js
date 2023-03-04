@@ -30,7 +30,12 @@ router.post("/invites", async (req, res) => {
 router.get("/invites/:userId/invitesReceived", async (req, res) => {
   try {
     const { userId } = req.params;
-    const user = await User.findById(userId).populate("invitesReceived");
+    const user = await User.findById(userId).populate({
+      path: "invitesReceived",
+      populate: {
+        path: "sender"
+      }
+    });
     res.status(200).json(user.invitesReceived);
   } catch (error) {
     res.status(500).json({ message: error });

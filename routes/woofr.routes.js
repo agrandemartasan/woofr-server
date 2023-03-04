@@ -16,7 +16,8 @@ router.get("/all", async (req, res) => {
 router.get("/:userId", async (req, res) => {
   try {
     const response = await User.findById(req.params.userId).populate([
-      "invites",
+      "invitesSent",
+      "invitesReceived",
       "friends"
     ]);
     res.status(200).json(response);
