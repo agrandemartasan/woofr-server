@@ -5,22 +5,22 @@ const Message = require("../models/Message.model");
 const router = express.Router();
 
 // creating a chat when a user wants to send a message to another user for the first time
-router.post("/chats", async (req, res) => {
-  const { userId, recipientId } = req.body;
-  try {
-    let existingChat = await Chat.findOne({
-      users: { $all: [userId, recipientId] }
-    });
-    if (existingChat) {
-      return res.json(existingChat);
-    }
-    // if there's no existing chat between these two users, create a new chat
-    const newChat = await Chat.create({ users: [userId, recipientId] });
-    res.status(200).json(newChat);
-  } catch (error) {
-    res.status(500).json({ message: error });
-  }
-});
+// router.post("/chats", async (req, res) => {
+//   const { userId, recipientId } = req.body;
+//   try {
+//     let existingChat = await Chat.findOne({
+//       users: { $all: [userId, recipientId] }
+//     });
+//     if (existingChat) {
+//       return res.json(existingChat);
+//     }
+//     // if there's no existing chat between these two users, create a new chat
+//     const newChat = await Chat.create({ users: [userId, recipientId] });
+//     res.status(200).json(newChat);
+//   } catch (error) {
+//     res.status(500).json({ message: error });
+//   }
+// });
 
 // getting all chats from specific user
 router.get("/chats", async (req, res) => {
