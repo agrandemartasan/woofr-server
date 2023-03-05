@@ -65,6 +65,12 @@ router.put("/invites/:inviteId/accept", async (req, res) => {
     );
     console.log("invite", invite);
 
+    const chat = new Chat({
+      users: [invite.sender, invite.recipient]
+    });
+    const newChat = await chat.save();
+    console.log("newChat", newChat);
+
     await Promise.all([
       User.findByIdAndUpdate(invite.recipient, {
         $push: { friends: invite.sender }
@@ -73,15 +79,15 @@ router.put("/invites/:inviteId/accept", async (req, res) => {
         $push: { friends: invite.recipient }
       }),
       User.findByIdAndUpdate(invite.recipient, {
+        $push: { chats: newChat._id }
+      }),
+      User.findByIdAndUpdate(invite.sender, {
+        $push: { chats: newChat._id }
+      }),
+      User.findByIdAndUpdate(invite.recipient, {
         $pull: { invitesReceived: inviteId }
       })
     ]);
-
-    const chat = new Chat({
-      users: [invite.sender, invite.recipient]
-    });
-    const newChat = await chat.save();
-    console.log("newChat", newChat);
 
     res.status(200).json(invite);
   } catch (error) {

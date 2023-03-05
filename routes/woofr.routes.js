@@ -18,7 +18,8 @@ router.get("/:userId", async (req, res) => {
     const response = await User.findById(req.params.userId).populate([
       "invitesSent",
       "invitesReceived",
-      "friends"
+      "friends",
+      "chats"
     ]);
     res.status(200).json(response);
   } catch (error) {

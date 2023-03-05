@@ -23,9 +23,9 @@ const router = express.Router();
 // });
 
 // getting all chats from specific user
-router.get("/chats", async (req, res) => {
+router.get("/chats/:userId", async (req, res) => {
   try {
-    const response = await Chat.find({ users: req.user._id })
+    const response = await Chat.find({ users: req.userId })
       .populate("users", "username")
       .populate("latestMessage", "content createdAt")
       .sort({ updatedAt: -1 });
