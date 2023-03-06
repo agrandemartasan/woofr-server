@@ -8,7 +8,6 @@ router.post("/invites", async (req, res) => {
     const {
       sender: { sender, recipient }
     } = req.body;
-    console.log(req.body);
     const invite = new Invite({ sender, recipient });
     const newInvite = await invite.save();
 
@@ -63,13 +62,11 @@ router.put("/invites/:inviteId/accept", async (req, res) => {
       },
       { new: true }
     );
-    console.log("invite", invite);
 
     const chat = new Chat({
       users: [invite.sender, invite.recipient]
     });
     const newChat = await chat.save();
-    console.log("newChat", newChat);
 
     await Promise.all([
       User.findByIdAndUpdate(invite.recipient, {

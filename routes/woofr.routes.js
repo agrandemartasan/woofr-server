@@ -104,7 +104,7 @@ router.get("/:userId/friends", async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    res.json(user.friends);
+    res.status(200).json(user.friends);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error });
@@ -116,7 +116,6 @@ router.put("/:userId/unfriend", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     const friendId = req.body.friendId;
-    console.log(friendId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });

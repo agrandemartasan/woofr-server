@@ -1,4 +1,5 @@
 const express = require("express");
+const User = require("../models/User.model");
 const Chat = require("../models/Chat.model");
 const Message = require("../models/Message.model");
 
@@ -23,12 +24,24 @@ const router = express.Router();
 // });
 
 // getting all chats from specific user
-router.get("/chats/:userId", async (req, res) => {
+router.get("/:userId/chats", async (req, res) => {
   try {
-    const response = await Chat.find({ users: req.userId })
-      .populate("users", "username")
-      .populate("latestMessage", "content createdAt")
-      .sort({ updatedAt: -1 });
+    const response = await User.findById(req.params.userId).populate({
+      path: "chats",
+      populate: [
+        {
+          path: "users"
+        },
+        {
+          path: "latestMessage",
+          populate: "sender"
+        },
+        {
+          path: "messages",
+          populate: "sender"
+        }
+      ]
+    });
     res.status(200).json(response);
   } catch (error) {
     res.status(500).json({ message: error });
@@ -51,13 +64,20 @@ router.get("/chats/:chatId/messages", async (req, res) => {
 //posting a new message in a specific chat
 router.post("/chats/:chatId/messages", async (req, res) => {
   const chatId = req.params.chatId;
-  const { senderId, content } = req.body;
+  const { sender, content } = req.body;
+
   try {
     const response = await Message.create({
-      sender: senderId,
+      sender,
       content,
       chat: chatId
     });
+    await Chat.findByIdAndUpdate(
+      chatId,
+      { $push: { messages: response._id } },
+      { new: true }
+    );
+
     // updating the chat's latest message
     await Chat.findByIdAndUpdate(chatId, { latestMessage: response._id });
     res.status(200).json(response);
