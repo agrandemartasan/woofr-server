@@ -54,7 +54,7 @@ router.put("/:userId", async (req, res) => {
         username,
         email,
         password: hashedPassword,
-        profilePicture,
+        profilePicture: profilePicture,
         info: {
           locationByParish,
           bio,
@@ -76,26 +76,22 @@ router.put("/:userId", async (req, res) => {
   }
 });
 
-router.post(
-  "/upload",
-  fileUpload.single("filename"),
-  async (req, res, next) => {
-    try {
-      if (req.file) {
-        res.status(200).json({ fileUrl: req.file.path });
-      } else {
-        res.status(301).json({
-          message: "An error occurred while returning the image path"
-        });
-      }
-    } catch (error) {
-      console.log("err: ", error);
-      res
-        .status(301)
-        .json({ message: "An error occurred while returning the image path" });
+router.post("/upload", fileUpload.single("filename"), async (req, res) => {
+  try {
+    if (req.file) {
+      res.status(200).json({ fileUrl: req.file.path });
+    } else {
+      res.status(301).json({
+        message: "An error occurred while returning the image path"
+      });
     }
+  } catch (error) {
+    console.log("err: ", error);
+    res
+      .status(301)
+      .json({ message: "An error occurred while returning the image path" });
   }
-);
+});
 
 // Route to get a specific user's friends
 router.get("/:userId/friends", async (req, res) => {
