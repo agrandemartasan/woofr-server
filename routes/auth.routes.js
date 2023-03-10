@@ -33,7 +33,17 @@ router.post("/signup", async (req, res) => {
       info: { locationByParish: location, birthday: today }
     });
 
-    res.status(200).json({ message: "Success", createdUser });
+    const authToken = jwt.sign(
+      {
+        _id: createdUser._id,
+        username: createdUser.username,
+        email: createdUser.email
+      },
+      process.env.TOKEN_SECRET,
+      { algorithm: "HS256", expiresIn: "6h" }
+    );
+
+    res.status(200).json({ message: "Success", authToken: authToken });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
