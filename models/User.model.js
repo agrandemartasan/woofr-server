@@ -26,7 +26,7 @@ const userSchema = new Schema(
     profilePicture: {
       type: String,
       default:
-        "https://res.cloudinary.com/dr2lhtfs8/image/upload/v1678375086/woofr/220802_marta_diogo_prewedding-189_pdax10.jpg"
+        "https://res.cloudinary.com/dr2lhtfs8/image/upload/v1678463678/woofr/default-pfp_qqf5kv.jpg"
     },
     info: {
       locationByParish: {
