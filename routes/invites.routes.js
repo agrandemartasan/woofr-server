@@ -2,9 +2,8 @@ const router = require("express").Router();
 const Invite = require("../models/Invite.model");
 const User = require("../models/User.model");
 const Chat = require("../models/Chat.model");
-const { isAuthenticated } = require("../middleware/jwt.middleware");
 
-router.post("/invites", isAuthenticated, async (req, res) => {
+router.post("/invites", async (req, res) => {
   try {
     const {
       sender: { sender, recipient }
@@ -29,7 +28,7 @@ router.post("/invites", isAuthenticated, async (req, res) => {
 
 router.get(
   "/invites/:userId/invitesReceived",
-  isAuthenticated,
+
   async (req, res) => {
     try {
       const { userId } = req.params;
@@ -48,7 +47,7 @@ router.get(
 
 router.get(
   "/invites/:userId/invitesSent",
-  isAuthenticated,
+
   async (req, res) => {
     try {
       const { userId } = req.params;
@@ -60,7 +59,7 @@ router.get(
   }
 );
 
-router.put("/invites/:inviteId/accept", isAuthenticated, async (req, res) => {
+router.put("/invites/:inviteId/accept", async (req, res) => {
   const { inviteId } = req.params;
 
   try {
@@ -101,7 +100,7 @@ router.put("/invites/:inviteId/accept", isAuthenticated, async (req, res) => {
   }
 });
 
-router.put("/invites/:inviteId/reject", isAuthenticated, async (req, res) => {
+router.put("/invites/:inviteId/reject", async (req, res) => {
   try {
     const { inviteId } = req.params;
     const invite = await Invite.findByIdAndUpdate(inviteId, {

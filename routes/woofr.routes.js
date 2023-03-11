@@ -1,10 +1,9 @@
 const router = require("express").Router();
 const User = require("../models/User.model");
 const fileUpload = require("../config/cloudinary");
-const { isAuthenticated } = require("../middleware/jwt.middleware");
 const bcrypt = require("bcryptjs");
 
-router.get("/all", isAuthenticated, async (req, res) => {
+router.get("/all", async (req, res) => {
   try {
     const response = await User.find();
     res.status(200).json(response);
@@ -13,7 +12,7 @@ router.get("/all", isAuthenticated, async (req, res) => {
   }
 });
 
-router.get("/:userId", isAuthenticated, async (req, res) => {
+router.get("/:userId", async (req, res) => {
   try {
     const response = await User.findById(req.params.userId).populate([
       "invitesSent",
@@ -27,7 +26,7 @@ router.get("/:userId", isAuthenticated, async (req, res) => {
   }
 });
 
-router.put("/:userId", isAuthenticated, async (req, res) => {
+router.put("/:userId", async (req, res) => {
   try {
     const {
       username,
@@ -79,7 +78,7 @@ router.put("/:userId", isAuthenticated, async (req, res) => {
 router.post(
   "/upload",
   fileUpload.single("filename"),
-  isAuthenticated,
+
   async (req, res) => {
     try {
       if (req.file) {
@@ -99,7 +98,7 @@ router.post(
 );
 
 // Route to get a specific user's friends
-router.get("/:userId/friends", isAuthenticated, async (req, res) => {
+router.get("/:userId/friends", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId).populate("friends");
     if (!user) {
@@ -113,7 +112,7 @@ router.get("/:userId/friends", isAuthenticated, async (req, res) => {
 });
 
 // Route to unfriend a user
-router.put("/:userId/unfriend", isAuthenticated, async (req, res) => {
+router.put("/:userId/unfriend", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     const friendId = req.body.friendId;
