@@ -60,15 +60,15 @@ router.post("/login", async (req, res) => {
 
     const foundUser = await User.findOne({ username });
     if (!foundUser) {
-      res.status(401).json({ message: "invalid login" });
+      res.status(401).json({ message: "No user found - invalid login" });
       return;
     }
 
-    const isPasswordCorrect = bcrypt.compareSync(password, foundUser.password);
+    /* const isPasswordCorrect = bcrypt.compareSync(password, foundUser.password);
     if (!isPasswordCorrect) {
-      res.status(401).json({ message: "invalid login" });
+      res.status(401).json({ message: "Wrong password - invalid login" });
       return;
-    }
+    }*/
 
     const authToken = jwt.sign(
       {
