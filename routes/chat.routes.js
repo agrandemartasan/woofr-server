@@ -2,11 +2,12 @@ const express = require("express");
 const User = require("../models/User.model");
 const Chat = require("../models/Chat.model");
 const Message = require("../models/Message.model");
+const { isAuthenticated } = require("../middleware/jwt.middleware");
 
 const router = express.Router();
 
 // getting all chats from specific user
-router.get("/:userId/chats", async (req, res) => {
+router.get("/:userId/chats", isAuthenticated, async (req, res) => {
   try {
     const response = await User.findById(req.params.userId).populate({
       path: "chats",
@@ -31,7 +32,7 @@ router.get("/:userId/chats", async (req, res) => {
 });
 
 // get messages from a specific chat
-router.get("/chats/:chatId/messages", async (req, res) => {
+router.get("/chats/:chatId/messages", isAuthenticated, async (req, res) => {
   const chatId = req.params.chatId;
   try {
     const response = await Message.find({ chat: chatId })
@@ -44,7 +45,7 @@ router.get("/chats/:chatId/messages", async (req, res) => {
 });
 
 //posting a new message in a specific chat
-router.post("/chats/:chatId/messages", async (req, res) => {
+router.post("/chats/:chatId/messages", isAuthenticated, async (req, res) => {
   const chatId = req.params.chatId;
   const { sender, content } = req.body;
 

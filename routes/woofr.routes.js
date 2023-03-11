@@ -4,7 +4,7 @@ const fileUpload = require("../config/cloudinary");
 const { isAuthenticated } = require("../middleware/jwt.middleware");
 const bcrypt = require("bcryptjs");
 
-router.get("/all", async (req, res) => {
+router.get("/all", isAuthenticated, async (req, res) => {
   try {
     const response = await User.find();
     res.status(200).json(response);
@@ -13,7 +13,7 @@ router.get("/all", async (req, res) => {
   }
 });
 
-router.get("/:userId", async (req, res) => {
+router.get("/:userId", isAuthenticated, async (req, res) => {
   try {
     const response = await User.findById(req.params.userId).populate([
       "invitesSent",
@@ -27,7 +27,7 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
-router.put("/:userId", async (req, res) => {
+router.put("/:userId", isAuthenticated, async (req, res) => {
   try {
     const {
       username,
@@ -76,25 +76,30 @@ router.put("/:userId", async (req, res) => {
   }
 });
 
-router.post("/upload", fileUpload.single("filename"), async (req, res) => {
-  try {
-    if (req.file) {
-      res.status(200).json({ fileUrl: req.file.path });
-    } else {
-      res.status(301).json({
-        message: "An error occurred while returning the image path"
-      });
+router.post(
+  "/upload",
+  fileUpload.single("filename"),
+  isAuthenticated,
+  async (req, res) => {
+    try {
+      if (req.file) {
+        res.status(200).json({ fileUrl: req.file.path });
+      } else {
+        res.status(301).json({
+          message: "An error occurred while returning the image path"
+        });
+      }
+    } catch (error) {
+      console.log("err: ", error);
+      res
+        .status(301)
+        .json({ message: "An error occurred while returning the image path" });
     }
-  } catch (error) {
-    console.log("err: ", error);
-    res
-      .status(301)
-      .json({ message: "An error occurred while returning the image path" });
   }
-});
+);
 
 // Route to get a specific user's friends
-router.get("/:userId/friends", async (req, res) => {
+router.get("/:userId/friends", isAuthenticated, async (req, res) => {
   try {
     const user = await User.findById(req.params.userId).populate("friends");
     if (!user) {
@@ -108,7 +113,7 @@ router.get("/:userId/friends", async (req, res) => {
 });
 
 // Route to unfriend a user
-router.put("/:userId/unfriend", async (req, res) => {
+router.put("/:userId/unfriend", isAuthenticated, async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     const friendId = req.body.friendId;
